@@ -1,15 +1,20 @@
 
 import React from 'react';
-import { StyleSheet, Text, View,Image } from 'react-native';
+import { StyleSheet, Text, View,Image,TouchableOpacity,TextInput } from 'react-native';
+import {BarCodeScanner} from 'expo-barcode-scanner'
+import *as Permissions from 'expo-permissions'
 
-
-export default class FaceScren extends React.Component {
+export default class LoremIpsum extends React.Component {
+  constructor(){
+    super();
+    this.state={
+      
+    }
+  }
   render(){
-  return (
-    <View >
-        <Text style={{fontSize:300}}>Instagram</Text>
-     
-    </View>
-  );
-}
+    return(
+      <View></View>
+    )
+  }
+
 }

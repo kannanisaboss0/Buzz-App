@@ -1,30 +1,32 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
-import {createAppContainer} from 'react-navigation'
-import {createBottomTabNavigator} from 'react-navigation-tabs'
-import FaceBookScren from './Screens/FaceBook';
-import InstagramScren from './Screens/Instagram'
+import {createAppContainer,createSwitchNavigator} from 'react-navigation'
+import {createBottomTabNavigator,createMaterialTopTabNavigator} from 'react-navigation-tabs'
+import MainScreen from './Screens/FaceBook';
+import LoremIpsum from './Screens/Instagram'
+import Login from './Screens/Login'
 
 export default class App extends React.Component {
   render(){
-  return (
-    <View >
-      <AppContainer/>
-    </View>
-  );
+    return(
+      <View style={{flex:1}}>
+        <Container/>
+
+      </View>
+    )
+  }
+ 
 }
+
+
+const TabNavigator=createMaterialTopTabNavigator({
+MainRoute: {screen:MainScreen},
+ LoremRoute: {screen:LoremIpsum},
 }
-const TabNavigator= createBottomTabNavigator({
-  FaceBook:{screen:FaceBookScren},
-  Instagram:{screen:InstagramScren}
-})
-const AppContainer = createAppContainer(TabNavigator)
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+)
+const SwitchNavigator=createSwitchNavigator({
+  LoginRoute:{screen:Login},
+  TabRoute:{screen:TabNavigator}
+  })
+const Container=createAppContainer(SwitchNavigator)
