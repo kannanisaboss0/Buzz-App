@@ -3,9 +3,11 @@ import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import {createAppContainer,createSwitchNavigator} from 'react-navigation'
 import {createBottomTabNavigator,createMaterialTopTabNavigator} from 'react-navigation-tabs'
-import MainScreen from './Screens/FaceBook';
-import LoremIpsum from './Screens/Instagram'
+import HomeScreen from './Screens/Home';
+import SettingScreen from './Screens/Settings'
 import Login from './Screens/Login'
+import {createDrawerNavigator,} from 'react-navigation-drawer'
+import Navigator from './Components/Navigator'
 
 export default class App extends React.Component {
   render(){
@@ -19,14 +21,22 @@ export default class App extends React.Component {
  
 }
 
+const DrawerNavigator=createDrawerNavigator({
+  HomeRoute:{screen:HomeScreen,navigationOptions:{drawerLabel:'Home'}},
+  SettingRoute:{screen:SettingScreen, navigationOptions:{drawerLabel:'Settings'}},
+  
+ 
+},
+{initialRouteName:'HomeRoute', 
+contentComponent:Navigator
+},
 
-const TabNavigator=createMaterialTopTabNavigator({
-MainRoute: {screen:MainScreen},
- LoremRoute: {screen:LoremIpsum},
-}
-)
+)  
+
 const SwitchNavigator=createSwitchNavigator({
   LoginRoute:{screen:Login},
-  TabRoute:{screen:TabNavigator}
+  
+  DrawerRoute:{screen:DrawerNavigator }
   })
+
 const Container=createAppContainer(SwitchNavigator)
