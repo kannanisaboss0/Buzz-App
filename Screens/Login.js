@@ -42,7 +42,7 @@ verfiyUserforSignUp=async(email,password)=>{
    try{
     const SignUp=  await firebase.auth().createUserWithEmailAndPassword(email,password)
     if(SignUp){
-        this.props.navigation.navigate('MainRoute') 
+        this.props.navigation.navigate('AppSynthesisRoute') 
     }
     db.collection("Users").add({
         "Account":this.state.name,
@@ -70,6 +70,42 @@ window.alert("Passwords do not match")
     window.alert("Invalid data in a field")
 }
 }
+verfiyUserforSignUp2=async(email,password)=>{
+    if(email&&password.trim().length>=7&&this.state.address&&this.state.fullname&&this.state.name&&this.state.address&&this.state.number&&this.state.occupation){
+        if(this.state.password2===this.state.password){
+
+        
+ try{
+  const SignUp=  await firebase.auth().createUserWithEmailAndPassword(email,password)
+  if(SignUp){
+      this.props.navigation.navigate('BackgroundMusicRoute2') 
+  }
+  db.collection("Users").add({
+      "Account":this.state.name,
+      "Fullname":this.state.fullname,
+      "Email":this.state.email2,
+      "Password":this.state.password2,
+      "Address":this.state.address,
+      "Number":this.state.number,
+      "Occupation":this.state.occupation
+
+  })
+ }
+ catch(error){
+ window.alert(error)
+  
+ }
+
+}
+else{
+window.alert("Passwords do not match")
+}
+    }
+
+ else{
+  window.alert("Invalid data in a field")
+}
+}
 
 verifyUserforLogin=async(email,password)=>{
        if(email&&password){
@@ -86,6 +122,21 @@ catch(error){
        }
 
    }
+   verifyUserforLogin2=async(email,password)=>{
+    if(email&&password){
+    try{
+ const Login= await firebase.auth().signInWithEmailAndPassword(email,password)
+ if(Login){
+     this.props.navigation.navigate('BackgroundMusicRoute')
+ }
+
+}
+catch(error){
+ window.alert(error)
+}
+    }
+
+}   
    
 
 
@@ -183,7 +234,7 @@ catch(error){
               containerStyle={{width:300,alignSelf:"center",}}
               
 
-            rightIcon={<TouchableOpacity onPressIn={()=>{this.setState({showPassword:false})}} onPressOut={()=>{this.setState({showPassword:true})}}><Image  source={require("../assets/Eye.PNG")} style={{width:20,height:20}}/></TouchableOpacity>}
+            rightIcon={<TouchableOpacity onPressIn={()=>{this.setState({showPassword:false})}} onPressOut={()=>{this.setState({showPassword:true})}}><Image  source={require("../assets/Eye.PNG")} style={{width:40,height:40}}/></TouchableOpacity>}
                leftIcon={this.state.password2.trim().length<=7?
                 <Badge onPress={()=>{
                     this.setState({
@@ -252,6 +303,9 @@ catch(error){
                <TouchableOpacity style={{alignSelf:"center", width:150,borderColor:"darkgreen",borderWidth:2,marginTop:25}} onPress={()=>{this.verfiyUserforSignUp(this.state.email2,this.state.password2)}}>
                    <Text style={{alignSelf:"center",color:"darkgreen",fontSize:32}}>Sign Up</Text>
                </TouchableOpacity>
+               <TouchableOpacity onPress={()=>{this.verfiyUserforSignUp2(this.state.email2,this.state.password2)}} >
+                  <Text style={{color:"darkgreen",alignSelf:"center"}}>With Background Music</Text>
+               </TouchableOpacity>
                    </Card>
 
                </View>
@@ -278,7 +332,7 @@ catch(error){
                />
                <Input
                secureTextEntry={this.state.showPassword}
-               leftIcon={<TouchableOpacity onPressIn={()=>{this.setState({showPassword:false})}} onPressOut={()=>{this.setState({showPassword:true})}}><Image  source={require("../assets/Eye.PNG")} style={{width:20,height:20}}/></TouchableOpacity>}
+               leftIcon={<TouchableOpacity onPressIn={()=>{this.setState({showPassword:false})}} onPressOut={()=>{this.setState({showPassword:true})}}><Image  source={require("../assets/Eye.PNG")} style={{width:40,height:40}}/></TouchableOpacity>}
                placeholder="Password"
                placeholderTextColor="darkgreen"
                containerStyle={{width:300,alignSelf:"center"}}
@@ -293,6 +347,9 @@ catch(error){
                />
                <TouchableOpacity onPress={()=>this.verifyUserforLogin(this.state.email2,this.state.password2)} style={{borderWidth:2,borderColor:"darkgreen",width:125,alignSelf:"center",marginTop:50}}>
                    <Text style={{fontSize:35,color:"darkgreen",alignSelf:"center"}}>Login</Text>
+               </TouchableOpacity>
+               <TouchableOpacity onPress={()=>this.verifyUserforLogin2(this.state.email2,this.state.password2)} >
+                  <Text style={{color:"darkgreen",alignSelf:"center"}}>With Background Music</Text>
                </TouchableOpacity>
  
               

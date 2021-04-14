@@ -1,11 +1,12 @@
 
 import React from 'react';
-import { StyleSheet, Text, View,Image,TouchableOpacity,TextInput,FlatList } from 'react-native';
+import { StyleSheet, Text, View,Image,TouchableOpacity,TextInput,FlatList,ScrollView } from 'react-native';
 import {BarCodeScanner} from 'expo-barcode-scanner'
 import *as Permissions from 'expo-permissions'
 import db from '../config'
 import firebase from 'firebase'
-import {Input,Card,ListItem} from 'react-native-elements'
+import {Input,Card,ListItem, Avatar} from 'react-native-elements'
+
 
 
 export default class HomeScreen extends React.Component {
@@ -24,249 +25,351 @@ export default class HomeScreen extends React.Component {
       question2:'',
       account:'',
       date:'',
-      answer:''
+      answer:'',
+      email2:'',
+      showCardIdea:false,
+      idea:'',
+      image:'',
+      email3:'',
+      color:'',
+      number:'',
+      address:'',
+      showCardProfile:false,
+      email4:'',
+      Ideas:[]
 
 
 
     }
   }
-  getUserData=()=>{
-    db.collection("Users").where("Email","==",this.state.email).onSnapshot((document)=>
-      document.forEach((doc)=>{
-        this.setState({
-          occupation:doc.data().Occupation,
-          name:doc.data().Account,
-          fullname:doc.data().Fullname
-
-        })
-      })
-      
-    )
-  }
-  getQuestions=()=>{
-    db.collection("Questions").onSnapshot((document)=>{
-      var Questions=document.docs.map((doc)=>
-          doc.data()
-      )
+getUserData=()=>{
+  db.collection("Users").where("Email","==",this.state.email).onSnapshot((document)=>
+    document.forEach((doc)=>{
       this.setState({
-        Questions:Questions
-      })
+        occupation:doc.data().Occupation,
+        name:doc.data().Account,
+        fullname:doc.data().Fullname,
+        email3:doc.data().Email,
+        
+
     })
-  }
-  addQuestion=()=>{
+   
+  })
+      
+  )
+}
+
+
+getQuestions=()=>{
+  db.collection("Questions").onSnapshot((document)=>{
+    var Questions=document.docs.map((doc)=>
+        doc.data()
+    )
+    this.setState({
+      Questions:Questions
+    })
+  })
+}
+
+getIdeas=()=>{
+  db.collection("Ideas").onSnapshot((document)=>{
+    var Ideas=document.docs.map((doc)=>
+        doc.data()
+    )
+    this.setState({
+      Ideas:Ideas
+    })
+  })
+}
+
+
+addQuestion=()=>{
+  if(this.state.question){
     db.collection("Questions").add({
       "Email":this.state.email,
       "Question":this.state.question,
-      "Date":firebase.firestore.Timestamp.now().toDate().toString().slice(0,24),
+      "Date":firebase.firestore.Timestamp.now().toDate().toString().slice(0,21),
       "Account":this.state.name,
       "Fullname":this.state.fullname
     })
   }
-  showCardUser=(email,question,date,account,fullname)=>{
-    if(this.state.showCardUser===true){
-      return(
-        <Card containerStyle={{width:500,height:700,position:"absolute",alignSelf:"center"}}>
-          <Text style={{color:"grey",fontSize:15}} onPress={()=>{this.setState({showCardUser:false})}}>Close</Text>
-        <Card.Title style={{color:"darkgreen",fontWeight:"bold",fontSize:33}}><Text>{this.state.account}'s Question</Text></Card.Title>
-        <Text>Name:</Text><Text style={{color:"darkgreen"}}>{this.state.name2}</Text>
-        <Text>Date:</Text><Text style={{color:"darkgreen"}}>{this.state.date}</Text>
-        <Text>Question:</Text>
-        <Text style={{color:"darkgreen",borderWidth:1,borderColor:"darkgreen",}}>{this.state.question2}</Text>
-        <Input
-        multiline
-        placeholder="Your Answer"
-        placeholderTextColor="darkgreen"
-        containerStyle={{marginTop:50}}
-        style={{borderBottomColor:"darkgreen",borderBottomWidth:1,}}
-        value={this.state.answer}
-        onChangeText={(answer)=>{
+  else{
+    window.alert("Please type in a valid question")
+  }
+   
+}
+
+
+
+
+
+
+
+
+renderItem=({item,index})=>{
+  
+    
+  return(
+    
+  <View>  
+    <ListItem  containerStyle={{borderColor:"darkgreen",borderWidth:1,backgroundColor:"white"}} topDivider    bottomDivider>
+      <Text style={{color:"darkgreen",fontWeight:"bold"}}>{index+1}</Text>
+    <ListItem.Subtitle  style={{alignSelf:"flex-end",marginLeft:"0%",}}>
+    
+      <TouchableOpacity  onPress={()=>{
+      this.props.navigation.navigate('DescriptionRoute',{'Item':item,'Image':this.state.image,'Type':'Question'})
+          
           this.setState({
-            answer:answer
-          })
-        }}
-        maxLength={400}
-        leftIcon={<Text style={{alignSelf:"center"}} onPress={()=>{this.setState({answer:''})}}>Clear</Text>}
-        />
-        <Text style={{color:"darkgreen"}}> Characters written:{this.state.answer.length}/400</Text>
-        <TouchableOpacity style={{borderColor:"darkgreen",borderWidth:1,width:200,alignSelf:"center",marginTop:25}}>
-          <Text style={{color:"darkgreen",fontSize:32,alignSelf:"center"}}>Answer</Text>
-        </TouchableOpacity>
-      </Card>
-      
-      )
-     
-    }
-  }
-  renderItem=({item,i})=>{
-    return(
-      <View>
-        
-        
-   <ListItem topDivider    bottomDivider>
-     <View style={{width:1500}}>
-     <ListItem.Title  >
-
-       <Text  style={{fontWeight:"bold",fontSize:25,}}>{item.Question}</Text>
-     </ListItem.Title   >
-     </View>
-     <ListItem.Subtitle style={{width:300}}>
-      Asked By: {item.Account}
-     </ListItem.Subtitle>
-     <ListItem.Subtitle right style={{alignSelf:"flex-end",marginLeft:"0%",}}>
-     <TouchableOpacity  onPress={()=>
-      {this.showCardUser(item.Email,item.Question,item.Date,item.Account,item.Fullname)
-      this.setState({
-        showCardUser:true,
-        name2:item.Fullname,
-        question2:item.Question,
-        account:item.Account,
-        date:item.Date
-
+          showCardUser:true,
+          name2:item.Fullname,
+          question2:item.Question,
+          account:item.Account,
+          date:item.Date,
+          email2:item.Email,
+          number:item.Number,
+          address:item.Address,
+          image:''
       })
-      }} style={{width:200,borderWidth:1,borderColor:"darkgreen"}}>
-       <Text style={{color:"darkgreen",fontSize:20,alignSelf:"center"}}>Answer</Text>
+      firebase.storage().ref().child("Profiles/"+item.Email).getDownloadURL().then((URL)=>{
+        this.setState({
+          image:URL
+        })
+        })
+      }} style={{width:150,borderWidth:1,borderColor:"darkgreen"}}>
+        <Text style={{fontWeight:"bold",fontSize:15,alignSelf:"center",color:"black"}}>Answer</Text>
      </TouchableOpacity>
-     </ListItem.Subtitle>
+    </ListItem.Subtitle>
+    
+    
+      <View style={{width:1100}} >
+        <ListItem.Title>
+          <Text  style={{fontWeight:"bold",fontSize:17}}>{item.Question}</Text>
+        </ListItem.Title>
+  </View>
+    <ListItem.Subtitle right style={{width:300,fontFamily:"cursive"}}>
+    <Text>{this.state.image}</Text>
+      Asked By: {item.Account}
+    </ListItem.Subtitle>
+    <ListItem.Subtitle style={{color:"darkgreen"}}>
+     Date Asked: {item.Date}
+    </ListItem.Subtitle>
+   
+   
 
-   </ListItem>
-   </View>
-  
-    )
-  }
-  
-  componentDidMount(){
-    this.getUserData()
-    this.getQuestions()
-    this.showCardUser()
-  }
-  render(){
-    return(
-      <View>
-        {this.state.occupation==="Student"?
-        
-        <View>
-        
-          
-          <Text style={{fontSize:32,fontWeight:"bold",color:"darkgreen"}}>Questions</Text>
-          <TouchableOpacity style={{borderWidth:1,borderColor:"darkgreen",width:200}} onPress={()=>{this.setState({showCardQuestion:true})}}>
-            <Text style={{fontSize:27,color:"darkgreen",alignSelf:"center"}}>Ask A Question</Text>
-          </TouchableOpacity>
-          <FlatList
-          data={this.state.Questions}
-          keyExtractor={(item,index)=>{
-            index.toString()
-          }}
-          renderItem={this.renderItem}
-          />
-          
-          {this.state.showCardQuestion===true?
-        <Card containerStyle={{alignSelf:"center",width:500,height:700,position:"absolute"}}>
-           <Text style={{color:"grey",fontSize:15}} onPress={()=>{this.setState({showCardQuestion:false})}}>Close</Text>
-          <Card.Title  style={{fontWeight:"bold",fontSize:33,color:"darkgreen"}}>Ask Question</Card.Title>
-                <View>
-                    <Input
-                    value={this.state.question}
-                    onChangeText={(question)=>{
-                        this.setState({
-                            question:question
-                        })
-                    }}
-                    placeholder="Your Question"
-                    placeholderTextColor="darkgreen"
-                   
-                    leftIconContainerStyle={{borderWidth:1,borderColor:"darkgreen",width:50}}
-                    leftIcon={<Text style={{alignSelf:"center"}} onPress={()=>{this.setState({question:''})}}>Clear</Text>}
-                    multiline
-                    containerStyle={{alignSelf:"center"}}
-                    style={{borderColor:"darkgreen",borderBottomWidth:1}}
-                    maxLength={400}
-                    />
-                    
-        
-        <Text style={{color:"darkgreen"}}> Characters written:{this.state.question.length}/400</Text>
-                     <TouchableOpacity  style={{alignSelf:"center", width:150,borderColor:"darkgreen",borderWidth:2,marginTop:25}} onPress={()=>{this.addQuestion()}}>
-                   <Text style={{alignSelf:"center",color:"darkgreen",fontSize:32}}>Post</Text>
-               </TouchableOpacity>
-              
-                </View>
-               
-        </Card>
-        
-        :null
-        }
-        
-         {this.showCardUser()}
-            </View>
-
-  :<View>
-<Text style={{fontSize:32,fontWeight:"bold",color:"darkgreen"}}>Questions</Text>
-          
-          <FlatList
-          data={this.state.Questions}
-          keyExtractor={(item,index)=>{
-            index.toString()
-          }}
-          renderItem={this.renderItem}
-          />
-          
-          {this.state.showCardQuestion===true?
-        <Card containerStyle={{alignSelf:"center",width:500,height:700,position:"absolute"}}>
-           <Text style={{color:"grey",fontSize:15}} onPress={()=>{this.setState({showCardQuestion:false})}}>Close</Text>
-          <Card.Title  style={{fontWeight:"bold",fontSize:33,color:"darkgreen"}}>Ask Question</Card.Title>
-                <View>
-                    <Input
-                    value={this.state.question}
-                    onChangeText={(question)=>{
-                        this.setState({
-                            question:question
-                        })
-                    }}
-                    placeholder="Your Question"
-                    placeholderTextColor="darkgreen"
-                   
-                    leftIconContainerStyle={{borderWidth:1,borderColor:"darkgreen",width:50}}
-                    leftIcon={<Text style={{alignSelf:"center"}} onPress={()=>{this.setState({question:''})}}>Clear</Text>}
-                    multiline
-                    containerStyle={{alignSelf:"center"}}
-                    style={{borderColor:"darkgreen",borderBottomWidth:1}}
-                    maxLength={400}
-                    />
-                    
-        
-        <Text style={{color:"darkgreen"}}> Characters written:{this.state.question.length}/400</Text>
-                     <TouchableOpacity  style={{alignSelf:"center", width:150,borderColor:"darkgreen",borderWidth:2,marginTop:25}} onPress={()=>{this.addQuestion()}}>
-                   <Text style={{alignSelf:"center",color:"darkgreen",fontSize:32}}>Post</Text>
-               </TouchableOpacity>
-              
-                </View>
-               
-        </Card>
-        
-        :null
-        }
-        
-         {this.showCardUser()}
-
+    </ListItem>
   </View>
   
+    )
+}
+renderItem2=({item,index})=>{
+  return(
+    
+    <View>  
+      <ListItem  containerStyle={{borderColor:"darkgreen",borderWidth:1,backgroundColor:"white"}} topDivider    bottomDivider>
+        <Text style={{color:"darkgreen",fontWeight:"bold"}}>{index+1}</Text>
+      <ListItem.Subtitle  style={{alignSelf:"flex-end",marginLeft:"0%",}}>
+      
+        <TouchableOpacity  onPress={()=>{
+        this.props.navigation.navigate('DescriptionRoute',{'Item':item,'Image':this.state.image, 'Type':'Idea'})
+            
+            this.setState({
+            showCardUser:true,
+            name2:item.Fullname,
+            question2:item.Idea,
+            account:item.Account,
+            date:item.Date,
+            email2:item.Email,
+            number:item.Number,
+            address:item.Address,
+            image:''
+        })
+        firebase.storage().ref().child("Profiles/"+item.Email).getDownloadURL().then((URL)=>{
+          this.setState({
+            image:URL
+          })
+          })
+        }} style={{width:150,borderWidth:1,borderColor:"darkgreen"}}>
+          <Text style={{fontWeight:"bold",fontSize:15,alignSelf:"center",color:"black"}}>Assess</Text>
+       </TouchableOpacity>
+      </ListItem.Subtitle>
+      
+      
+        <View style={{width:1100}} >
+          <ListItem.Title>
+            <Text  style={{fontWeight:"bold",fontSize:17}}>{item.Idea}</Text>
+          </ListItem.Title>
+    </View>
+      <ListItem.Subtitle right style={{width:300,fontFamily:"cursive"}}>
+      <Text>{this.state.image}</Text>
+        Asked By: {item.Account}
+      </ListItem.Subtitle>
+      <ListItem.Subtitle style={{color:"darkgreen"}}>
+       Date Asked: {item.Date}
+      </ListItem.Subtitle>
+     
+     
+  
+      </ListItem>
+    </View>
+    
+      )
+}
+
+
+  
+
+
+componentDidMount(){
+  this.getUserData()
+  this.getQuestions(
+    this.getIdeas()
+  )
+ 
+  console.log(this.state.image)
   
   
+}
+componentDidUpdate(){
+  firebase.storage().ref().child("Profiles/"+this.state.email2).getDownloadURL().then((URL)=>{
+    this.setState({
+      image:URL
+    })
+    })
+}
+
+
+
+render(){
+  return(
+  <View style={{backgroundColor:"#F8FAFB"}}>
+    {this.state.occupation==="Student"?
+        
+              <View style={{backgroundColor:"#F8FAFB"}}>
+                <View style={{borderWidth:1,borderColor:"darkgreen"}}>
+                  <Text style={{fontSize:32,fontWeight:"bold",color:"darkgreen"}}>Questions</Text>
+               {this.state.Questions.length===0?
+               <View>
+                 <Image
+                 style={{width:200,height:200,alignSelf:"center"}}
+                 source={require("../assets/Dropbox.PNG")}
+                 />
+                 <Text style={{alignSelf:"center",color:"grey",fontSize:25}}>No Questions currently</Text>
+                 <Text onPress={()=>{this.getQuestions()}} style={{alignSelf:"center",color:"grey",fontSize:20}}>Click here to try again.</Text>
+                 </View>
+               :
+               
+               <ScrollView style={{height:300,}}  >
+                    <FlatList
+                      data={this.state.Questions}
+                      keyExtractor={(item,index)=>{
+                        index.toString()
+                      }}
+                      renderItem={this.renderItem}
+                    />
+                  </ScrollView>
+               
+               }
+               </View>
+                  
+               
+      
+                
+                  
+                  
+               <Text style={{fontSize:32,fontWeight:"bold",color:"darkgreen"}}>Ideas</Text>
+               {this.state.Ideas.length===0?
+               <View>
+                 
+                 <Image
+                 style={{width:200,height:200,alignSelf:"center"}}
+                 source={require("../assets/Dropbox.PNG")}
+                 />
+                 <Text style={{alignSelf:"center",color:"grey",fontSize:25}}>No Ideas currently</Text>
+                 <Text onPress={()=>{this.getIdeas()}} style={{alignSelf:"center",color:"grey",fontSize:20}}>Click here to try again.</Text>
+                 </View>
+               :
+               
+               <ScrollView style={{height:300,}}  >
+                    <FlatList
+                      data={this.state.Ideas}
+                      keyExtractor={(item,index)=>{
+                        index.toString()
+                      }}
+                      renderItem={this.renderItem2}
+                    />
+                  </ScrollView>
+               
+               }
+                
+             
+              </View>
+         
+         
+        
+        
+   
+          
+
+  :
+  <View>
+    {this.state.occupation==="Expert"?
+
+    <View style={{backgroundColor:"#F8FAFB",height:"300%"}}>
+      <Text style={{fontSize:32,fontWeight:"bold",color:"darkgreen"}}>Questions</Text>
+      {this.state.Questions.length===0?
+      <View style={{backgroundColor:"#F8FAFB",height:"300%"}} >
+        <Image
+        style={{width:500,height:500,alignSelf:"center"}}
+        source={require("../assets/Dropbox.PNG")}
+        />
+        <Text style={{alignSelf:"center",color:"grey",fontSize:25}}>No Questions currently</Text>
+        <Text onPress={()=>{this.getQuestions()}} style={{alignSelf:"center",color:"grey",fontSize:20}}>Click here to try again.</Text>
+        </View>
+      :
+      
+      <ScrollView style={{height:1000,backgroundColor:"#F8FAFB"}}  >
+           <FlatList
+             data={this.state.Questions}
+             keyExtractor={(item,index)=>{
+               index.toString()
+             }}
+             renderItem={this.renderItem}
+           />
+         </ScrollView>
+}
+    </View>
+    :
+    
+    <View style={{backgroundColor:"#F8FAFB",height:"300%"}}>
+      <Text style={{fontSize:32,fontWeight:"bold",color:"darkgreen"}}>Idea</Text>
+      {this.state.Ideas.length===0?
+      <View style={{backgroundColor:"#F8FAFB",height:"300%"}} >
+        <Image
+        style={{width:500,height:500,alignSelf:"center"}}
+        source={require("../assets/Dropbox.PNG")}
+        />
+        <Text style={{alignSelf:"center",color:"grey",fontSize:25}}>No  Ideas currently</Text>
+        <Text onPress={()=>{this.getIdeas()}} style={{alignSelf:"center",color:"grey",fontSize:20}}>Click here to try again.</Text>
+        </View>
+      :
+      
+      <ScrollView style={{height:1000,backgroundColor:"#F8FAFB"}}  >
+           <FlatList
+             data={this.state.Ideas}
+             keyExtractor={(item,index)=>{
+               index.toString()
+             }}
+             renderItem={this.renderItem2}
+           />
+         </ScrollView>
+}
+    </View>
+}
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+   
+        
+
+  </View> 
   
   }
        
